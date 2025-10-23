@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const passport = require('passport');
 const { connectDB } = require('./config/database');
 const { connectRedis } = require('./config/redis');
+const { rateLimit } = require('./middleware/rateLimit');
 
 // Load environment variables
 dotenv.config();
@@ -16,6 +17,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
+
+// Apply rate limiting to all routes
+app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
 // Database connections
 connectDB();
